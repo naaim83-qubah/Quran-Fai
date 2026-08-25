@@ -100,30 +100,40 @@
 <div class="wrap">
 
     <div class="hero">
-        <div class="badge">Level 1 · Huruf Hijaiyah</div>
+        <div class="badge">Level 1 · Lesson 1 · Huruf Hijaiyah</div>
         <h1>📖 Quran with FAI</h1>
         <p>Learn to read the Quran step by step with Teacher FAI.</p>
     </div>
 
     <div class="card">
-        <h2 style="text-align:center;">Kenali Huruf Pertama ✨</h2>
+        <h2 style="text-align:center;">Kenali 5 Huruf Pertama ✨</h2>
         <p style="text-align:center;color:#667;">Tap a letter to begin learning its sound.</p>
 
         <div class="letters">
 
-            <button class="letter" onclick="learnLetter('Alif')">
+            <button class="letter" onclick="learnLetter('Alif','ا')">
                 <div class="arabic">ا</div>
                 <div class="name">Alif</div>
             </button>
 
-            <button class="letter" onclick="learnLetter('Ba')">
+            <button class="letter" onclick="learnLetter('Ba','ب')">
                 <div class="arabic">ب</div>
                 <div class="name">Ba</div>
             </button>
 
-            <button class="letter" onclick="learnLetter('Ta')">
+            <button class="letter" onclick="learnLetter('Ta','ت')">
                 <div class="arabic">ت</div>
                 <div class="name">Ta</div>
+            </button>
+
+            <button class="letter" onclick="learnLetter('Tha','ث')">
+                <div class="arabic">ث</div>
+                <div class="name">Tha</div>
+            </button>
+
+            <button class="letter" onclick="learnLetter('Jim','ج')">
+                <div class="arabic">ج</div>
+                <div class="name">Jim</div>
             </button>
 
         </div>
@@ -151,9 +161,10 @@
 <script>
     let stars = 0;
 
-    function learnLetter(letter){
-        document.getElementById('message').textContent =
-            'Teacher FAI will teach: ' + letter + ' 🔊';
+    function learnLetter(letter, arabic){
+        document.getElementById('message').innerHTML =
+            '<div style="font-size:48px;margin-bottom:8px;">' + arabic + '</div>' +
+            'Listen and repeat: <strong>' + letter + '</strong> 🔊';
 
         stars++;
         document.getElementById('stars').textContent = stars;
