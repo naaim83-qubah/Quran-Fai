@@ -89,6 +89,27 @@
             text-align:center;
             font-size:20px;
         }
+
+        .activity-btn{
+            border:none;
+            background:#1f8f63;
+            color:white;
+            padding:11px 20px;
+            border-radius:14px;
+            font-weight:bold;
+            cursor:pointer;
+        }
+
+        .game-choice{
+            border:2px solid #d7ede2;
+            background:white;
+            padding:16px 22px;
+            margin:8px;
+            border-radius:16px;
+            font-size:20px;
+            cursor:pointer;
+        }
+
         @media(max-width:700px){
             .letters{grid-template-columns:1fr;}
             .hero h1{font-size:34px;}
@@ -151,6 +172,75 @@
             <span>⭐ Earn Stars</span>
         </div>
 
+
+        <div style="
+            margin-top:35px;
+            padding-top:28px;
+            border-top:1px solid #e5efe9;
+        ">
+            <h2 style="text-align:center;">🎮 Let's Play & Practice</h2>
+
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+                gap:16px;
+                margin-top:22px;
+            ">
+
+                <div style="
+                    background:#fff8e8;
+                    padding:22px;
+                    border-radius:20px;
+                    text-align:center;
+                ">
+                    <div style="font-size:34px;">👀</div>
+                    <h3>Which Letter?</h3>
+                    <p>Look at the Arabic letter and choose its name.</p>
+                    <button onclick="startLetterQuiz()" class="activity-btn">
+                        Start
+                    </button>
+                </div>
+
+                <div style="
+                    background:#eef6ff;
+                    padding:22px;
+                    border-radius:20px;
+                    text-align:center;
+                ">
+                    <div style="font-size:34px;">🧩</div>
+                    <h3>Match</h3>
+                    <p>Match the Arabic letter with its correct name.</p>
+                    <button onclick="startMatchGame()" class="activity-btn">
+                        Start
+                    </button>
+                </div>
+
+                <div style="
+                    background:#fff0f7;
+                    padding:22px;
+                    border-radius:20px;
+                    text-align:center;
+                ">
+                    <div style="font-size:34px;">🔎</div>
+                    <h3>Find the Letter</h3>
+                    <p>Teacher FAI asks you to find a letter.</p>
+                    <button onclick="startFindGame()" class="activity-btn">
+                        Start
+                    </button>
+                </div>
+
+            </div>
+
+            <div id="gameArea" style="
+                margin-top:25px;
+                background:#f8fffb;
+                padding:25px;
+                border-radius:20px;
+                text-align:center;
+                display:none;
+            "></div>
+        </div>
+
         <div class="stars">
             ⭐ <span id="stars">0</span> Stars
         </div>
@@ -169,6 +259,86 @@
         stars++;
         document.getElementById('stars').textContent = stars;
     }
+
+    const lessonLetters = [
+        {arabic:'ا', name:'Alif'},
+        {arabic:'ب', name:'Ba'},
+        {arabic:'ت', name:'Ta'},
+        {arabic:'ث', name:'Tha'},
+        {arabic:'ج', name:'Jim'}
+    ];
+
+    function showGame(html){
+        const area = document.getElementById('gameArea');
+        area.style.display = 'block';
+        area.innerHTML = html;
+        area.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    function reward(){
+        stars++;
+        document.getElementById('stars').textContent = stars;
+    }
+
+    function startLetterQuiz(){
+        const q = lessonLetters[Math.floor(Math.random()*lessonLetters.length)];
+        const names = lessonLetters.map(x => x.name).sort(() => Math.random() - 0.5);
+
+        showGame(`
+            <h3>Which letter is this?</h3>
+            <div style="font-size:80px;margin:15px;">${q.arabic}</div>
+            ${names.map(name =>
+                `<button class="game-choice"
+                    onclick="checkGameAnswer('${name}','${q.name}')">${name}</button>`
+            ).join('')}
+            <div id="gameFeedback" style="margin-top:15px;font-weight:bold;"></div>
+        `);
+    }
+
+    function startMatchGame(){
+        const q = lessonLetters[Math.floor(Math.random()*lessonLetters.length)];
+        const choices = lessonLetters
+            .map(x => x.name)
+            .sort(() => Math.random() - 0.5);
+
+        showGame(`
+            <h3>Match this letter</h3>
+            <div style="font-size:80px;margin:15px;">${q.arabic}</div>
+            ${choices.map(name =>
+                `<button class="game-choice"
+                    onclick="checkGameAnswer('${name}','${q.name}')">${name}</button>`
+            ).join('')}
+            <div id="gameFeedback" style="margin-top:15px;font-weight:bold;"></div>
+        `);
+    }
+
+    function startFindGame(){
+        const q = lessonLetters[Math.floor(Math.random()*lessonLetters.length)];
+        const shuffled = [...lessonLetters].sort(() => Math.random() - 0.5);
+
+        showGame(`
+            <h3>Find: ${q.name}</h3>
+            <p>Tap the correct Arabic letter.</p>
+            ${shuffled.map(item =>
+                `<button class="game-choice"
+                    style="font-size:45px;"
+                    onclick="checkGameAnswer('${item.name}','${q.name}')">${item.arabic}</button>`
+            ).join('')}
+            <div id="gameFeedback" style="margin-top:15px;font-weight:bold;"></div>
+        `);
+    }
+
+    function checkGameAnswer(answer, correct){
+        const feedback = document.getElementById('gameFeedback');
+
+        if(answer === correct){
+            feedback.textContent = '⭐ Correct! Well done!';
+            reward();
+        } else {
+            feedback.textContent = '🌱 Try again.';
+        }
+    }
+
 </script>
 
 </body>
