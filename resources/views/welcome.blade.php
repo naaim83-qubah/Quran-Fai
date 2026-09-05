@@ -308,7 +308,6 @@
 
         .book:before{left:3px; transform:rotateY(-9deg);}
         .book:after{right:3px; transform:rotateY(9deg);}
-
         .moon{
             position:absolute;
             top:5px;
@@ -657,30 +656,51 @@
 
         <div class="topbar">
             <div class="welcome">
-                <h2>Your Quran Journey</h2>
+                <h2>{{ __('quran.journey') }}</h2>
                 <p>Every small step brings you closer to reading with confidence.</p>
             </div>
 
             <div class="top-actions">
-                <button class="circle-btn">🔊</button>
-                <button class="circle-btn">⚙️</button>
+                <button class="circle-btn" title="{{ __('quran.listen') }}">🔊</button>
+
+                <div class="language-switcher">
+                    <a href="{{ route('language.switch', 'en') }}"
+                       class="language-btn {{ app()->getLocale() === 'en' ? 'active' : '' }}">
+                        🇬🇧 EN
+                    </a>
+
+                    <a href="{{ route('language.switch', 'ms') }}"
+                       class="language-btn {{ app()->getLocale() === 'ms' ? 'active' : '' }}">
+                        🇲🇾 BM
+                    </a>
+
+                    <a href="{{ route('language.switch', 'id') }}"
+                       class="language-btn {{ app()->getLocale() === 'id' ? 'active' : '' }}">
+                        🇮🇩 ID
+                    </a>
+
+                    <a href="{{ route('language.switch', 'ar') }}"
+                       class="language-btn {{ app()->getLocale() === 'ar' ? 'active' : '' }}">
+                        🇸🇦 العربية
+                    </a>
+                </div>
             </div>
         </div>
 
         <section class="hero">
             <div class="hero-copy">
-                <div class="eyebrow">CURRENT LESSON · LEVEL 1</div>
+                <div class="eyebrow" id="currentEyebrow">CURRENT LESSON · LEVEL 1</div>
 
-                <h3>Meet the Arabic Letters</h3>
+                <h3 id="currentTitle">{{ config('quran_fai.levels.1.titles.'.app()->getLocale(), config('quran_fai.levels.1.titles.en')) }}</h3>
 
-                <p>
+                <p id="currentDescription">
                     Begin with the first five Hijaiyah letters.
                     Listen carefully, repeat with Teacher FAI, touch the letters and start reading.
                 </p>
 
-                <button class="continue-btn" onclick="continueLearning()">
-                    ▶ Continue Learning
-                </button>
+                <a href="{{ route('quran.level1') }}" class="continue-btn" id="continueLearning">
+                    ▶ {{ __('quran.continue') }}
+                </a>
             </div>
 
             <div class="quran-art">
@@ -697,14 +717,14 @@
                 <p>Follow the path and unlock each Quran reading skill.</p>
             </div>
 
-            <div class="progress-text">Level 1 · 20% complete</div>
+            <div class="progress-text" id="journeyProgress">Level 1 · 20% complete</div>
         </div>
 
         <section class="journey">
 
             <div class="path"></div>
 
-            <div class="stage left">
+            <div class="stage left" id="stage1">
                 <button class="stone gold">1</button>
 
                 <div class="lesson current">
@@ -712,7 +732,7 @@
                         <div class="lesson-icon gold-bg">ا</div>
                         <div>
                             <h4>Arabic Letters</h4>
-                            <p>Recognise and pronounce Hijaiyah letters.</p>
+                            <p>{{ config('quran_fai.levels.1.descriptions.'.app()->getLocale(), config('quran_fai.levels.1.descriptions.en')) }}</p>
                         </div>
                     </div>
 
@@ -724,7 +744,7 @@
                 </div>
             </div>
 
-            <div class="stage right">
+            <div class="stage right" id="stage2">
                 <button class="stone teal">2</button>
 
                 <div class="lesson">
@@ -743,7 +763,7 @@
                 </div>
             </div>
 
-            <div class="stage left locked">
+            <div class="stage left locked" id="stage3">
                 <button class="stone purple">3</button>
 
                 <div class="lesson">
@@ -902,5 +922,206 @@
     }
 </script>
 
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const hasana = document.getElementById('hasana');
+
+    if (hasana) {
+        hasana.textContent =
+            localStorage.getItem('quran_fai_hasana') || '120';
+    }
+
+    const level1Complete =
+        localStorage.getItem('quran_fai_level1_rewarded') === '1';
+
+    const level2Complete =
+        localStorage.getItem('quran_fai_level2_rewarded') === '1';
+
+    if (level2Complete) {
+        const eyebrow = document.getElementById('currentEyebrow');
+        const title = document.getElementById('currentTitle');
+        const description = document.getElementById('currentDescription');
+        const continueLearning = document.getElementById('continueLearning');
+        const journeyProgress = document.getElementById('journeyProgress');
+        const stage1 = document.getElementById('stage1');
+        const stage2 = document.getElementById('stage2');
+        const stage3 = document.getElementById('stage3');
+
+        if (eyebrow) eyebrow.textContent = 'CURRENT LESSON · LEVEL 3';
+        if (title) title.textContent = 'Fathah, Kasrah & Dammah';
+
+        if (description) {
+            description.textContent =
+                'Learn how short vowel marks change the sound of Arabic letters.';
+        }
+
+        if (continueLearning) {
+            continueLearning.textContent = '▶ Continue to Level 3';
+            continueLearning.setAttribute('href', '{{ route('quran.level3') }}');
+        }
+
+        if (journeyProgress) {
+            journeyProgress.textContent = 'Level 3 · Levels 1–2 complete';
+        }
+
+        if (stage1) stage1.classList.add('completed');
+        if (stage2) stage2.classList.add('completed');
+
+        if (stage3) {
+            stage3.classList.remove('locked');
+            stage3.classList.add('current');
+            stage3.id = 'level-3';
+
+            const lock = stage3.querySelector('.lock');
+            if (lock) lock.remove();
+        }
+
+    } else if (level1Complete) {
+        const eyebrow = document.getElementById('currentEyebrow');
+        const title = document.getElementById('currentTitle');
+        const description = document.getElementById('currentDescription');
+        const continueLearning = document.getElementById('continueLearning');
+        const journeyProgress = document.getElementById('journeyProgress');
+        const stage1 = document.getElementById('stage1');
+        const stage2 = document.getElementById('stage2');
+
+        if (eyebrow) eyebrow.textContent = 'CURRENT LESSON · LEVEL 2';
+        if (title) title.textContent = 'Letter Sounds';
+
+        if (description) {
+            description.textContent =
+                'Hear each Hijaiyah letter clearly and match it with the correct sound.';
+        }
+
+        if (continueLearning) {
+            continueLearning.textContent = '▶ Continue to Level 2';
+            continueLearning.setAttribute('href', '{{ route('quran.level2') }}');
+        }
+
+        if (journeyProgress) {
+            journeyProgress.textContent = 'Level 2 · Level 1 complete';
+        }
+
+        if (stage1) {
+            stage1.classList.add('completed');
+        }
+
+        if (stage2) {
+            stage2.classList.add('current');
+            stage2.id = 'level-2';
+        }
+    }
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    function makeJourneyStageClickable(element, url) {
+        if (!element) return;
+
+        element.style.cursor = 'pointer';
+        element.setAttribute('role', 'link');
+        element.setAttribute('tabindex', '0');
+
+        element.addEventListener('click', () => {
+            window.location.href = url;
+        });
+
+        element.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window.location.href = url;
+            }
+        });
+    }
+
+    const level1Complete =
+        localStorage.getItem('quran_fai_level1_rewarded') === '1';
+
+    const level2Complete =
+        localStorage.getItem('quran_fai_level2_rewarded') === '1';
+
+    const stage1 = document.getElementById('stage1');
+    const stage2 = document.getElementById('stage2');
+    const stage3 =
+        document.getElementById('level-3') ||
+        document.getElementById('stage3');
+
+    makeJourneyStageClickable(
+        stage1,
+        '{{ route('quran.level1') }}'
+    );
+
+    if (level1Complete) {
+        makeJourneyStageClickable(
+            stage2,
+            '{{ route('quran.level2') }}'
+        );
+    }
+
+    if (level2Complete) {
+        makeJourneyStageClickable(
+            stage3,
+            '{{ route('quran.level3') }}'
+        );
+    }
+});
+</script>
+
 </body>
 </html>
+
+<style>
+/* Quran with FAI — Language Switcher */
+.language-switcher{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:5px;
+    background:rgba(255,255,255,.82);
+    border:1px solid rgba(15,92,83,.12);
+    border-radius:16px;
+    box-shadow:0 6px 20px rgba(20,70,65,.08);
+}
+
+.language-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:38px;
+    padding:0 11px;
+    border-radius:11px;
+    text-decoration:none;
+    color:#52615f;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+    transition:.2s ease;
+}
+
+.language-btn:hover{
+    background:#edf8f5;
+    color:#126c61;
+}
+
+.language-btn.active{
+    background:#126c61;
+    color:#fff;
+    box-shadow:0 4px 12px rgba(18,108,97,.20);
+}
+
+@media(max-width:800px){
+    .language-switcher{
+        gap:3px;
+    }
+
+    .language-btn{
+        min-height:34px;
+        padding:0 7px;
+        font-size:10px;
+    }
+}
+</style>
